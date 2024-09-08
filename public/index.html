@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A(i)ron Home Loans</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f0f4f8;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4c51bf, #6573c3);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: white;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 20px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            margin: -20px -20px 20px -20px;
+        }
+        .card-title {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .result {
+            background: #e6f2ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .debt-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-remove {
+            background: #e74c3c;
+        }
+        #chatbox {
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e6f2ff;
+            margin-left: auto;
+        }
+        .ai-message {
+            background-color: #f0f0f0;
+        }
+        .appointment-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .appointment-option {
+            padding: 5px 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>A(i)ron Home Loans</h1>
+
+        <div id="registration" class="card">
+            <div class="card-header">
+                <h2 class="card-title">Register</h2>
+            </div>
+            <input type="text" id="firstName" placeholder="First Name">
+            <input type="tel" id="phone" placeholder="Phone">
+            <input type="email" id="email" placeholder="Email">
+            <button class="btn" onclick="register()">Register</button>
+        </div>
+
+        <div id="chat" style="display:none;" class="card">
+            <div class="card-header">
+                <h2 class="card-title">Chat with our AI Assistant</h2>
+            </div>
+            <div id="chatbox"></div>
+            <input type="text" id="userInput" placeholder="Type your message here...">
+            <button class="btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <div id="dtiCalculator" class="card">
+            <div class="card-header">
+                <h2 class="card-title">DTI Calculator</h2>
+            </div>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="purchasePrice">Purchase Price:</label>
+                    <input type="text" id="purchasePrice" value="500,000">
+                </div>
+                <div class="input-group">
+                    <label for="downPaymentPercentage">Down Payment %:</label>
+                    <input type="text" id="downPaymentPercentage" value="20">
+                </div>
+                <div class="input-group">
+                    <label for="loanAmount">Loan Amount:</label>
+                    <input type="text" id="loanAmount" value="400,000" readonly>
+                </div>
+                <div class="input-group">
+                    <label for="interestRate">Interest Rate %:</label>
+                    <input type="text" id="interestRate" value="7.75">
+                </div>
+                <div class="input-group">
+                    <label for="loanTerm">Loan Term (years):</label>
+                    <input type="text" id="loanTerm" value="30">
+                </div>
+                <div class="input-group">
+                    <label for="monthlyTaxes">Monthly Taxes:</label>
+                    <input type="text" id="monthlyTaxes" value="520.83">
+                </div>
+                <div class="input-group">
+                    <label for="monthlyInsurance">Monthly Insurance:</label>
+                    <input type="text" id="monthlyInsurance" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="pmi">PMI:</label>
+                    <input type="text" id="pmi" value="183.33" readonly>
+                </div>
+            </div>
+            <div class="result" id="monthlyPaymentResult"></div>
+
+            <h3>Current Debts</h3>
+            <div id="debtsContainer"></div>
+            <button class="btn" onclick="addDebt()">Add Debt</button>
+
+            <div class="input-group">
+                <label for="monthlyIncome">Estimated Monthly Income:</label>
+                <input type="text" id="monthlyIncome" placeholder="Enter your monthly income">
+            </div>
+
+            <div class="result" id="dtiResult"></div>
+        </div>
+    </div>
+
+    <script>
+        let userId;
+        let debts = [
+            { name: '', monthlyPayment: '', totalBalance: '', status: 'Keep' }
+        ];
+
+        function formatNumber(value) {
+            const number = parseFloat(value.replace(/,/g, ''));
+            return isNaN(number) ? '' : number.toLocaleString('en-US');
+        }
+
+        function parseNumber(value) {
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        }
+
+        async function register() {
+            const firstName = document.getElementById('firstName').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ firstName, phone, email })
+            });
+
+            const data = await response.json();
+            userId = data.userId;
+            document.getElementById('registration').style.display = 'none';
+            document.getElementById('chat').style.display = 'block';
+            displayMessage(`Welcome, ${data.firstName}! How can I assist you today?`, 'ai-message');
+        }
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value;
+            userInput.value = '';
+
+            displayMessage(message, 'user-message');
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, message })
+            });
+
+            const data = await response.json();
+            displayMessage(formatAIResponse(data.reply), 'ai-message');
+        }
+
+        function formatAIResponse(response) {
+            const sentences = response.split(/(?<=[.!?])\s+/);
+            if (sentences.length > 3) {
+                return sentences.map(s => `• ${s}`).join('\n');
+            }
+            return response;
+        }
+
+        function displayMessage(message, className) {
+            const chatbox = document.getElementById('chatbox');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message', className);
+            messageElement.innerHTML = message.replace(/\n/g, '<br>');
+            chatbox.appendChild(messageElement);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function calculateLoanAmount() {
+            const price = parseNumber(document.getElementById('purchasePrice').value);
+            const downPaymentPercentage = parseNumber(document.getElementById('downPaymentPercentage').value);
+            return price * (1 - downPaymentPercentage / 100);
+        }
+
+        function calculateMonthlyTaxes() {
+            const price = parseNumber(document.getElementById('purchasePrice').value);
+            return (price * 0.0125) / 12;
+        }
+
+        function calculatePMI() {
+            const loanAmount = calculateLoanAmount();
+            return (loanAmount * 0.0055) / 12;
+        }
+
+        function calculateMortgagePayment() {
+            const principal = parseNumber(document.getElementById('loanAmount').value);
+            const monthlyRate = parseNumber(document.getElementById('interestRate').value) / 100 / 12;
+            const numberOfPayments = parseNumber(document.getElementById('loanTerm').value) * 12;
+
+            const mortgagePayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+
+            return mortgagePayment + parseNumber(document.getElementById('monthlyTaxes').value) + parseNumber(document.getElementById('monthlyInsurance').value) + parseNumber(document.getElementById('pmi').value);
+        }
+
+        function calculateDTI() {
+            const mortgagePayment = calculateMortgagePayment();
+            const totalDebtPayments = debts.reduce((sum, debt) => 
+                debt.status === 'Keep' ? sum + parseNumber(debt.monthlyPayment) : sum, 0);
+            const totalMonthlyObligations = mortgagePayment + totalDebtPayments;
+            const monthlyIncome = parseNumber(document.getElementById('monthlyIncome').value);
+
+            if (monthlyIncome > 0) {
+                return ((totalMonthlyObligations / monthlyIncome) * 100).toFixed(2);
+            } else {
+                return 0;
+            }
+        }
+
+        function updateCalculations() {
+            const loanAmount = calculateLoanAmount();
+            const monthlyTaxes = calculateMonthlyTaxes();
+            const pmi = calculatePMI();
+
+            document.getElementById('loanAmount').value = formatNumber(loanAmount.toFixed(2));
+            document.getElementById('monthlyTaxes').value = formatNumber(monthlyTaxes.toFixed(2));
+            document.getElementById('pmi').value = formatNumber(pmi.toFixed(2));
+
+            const monthlyPayment = calculateMortgagePayment();
+            document.getElementById('monthlyPaymentResult').textContent = `Estimated Monthly Payment: $${formatNumber(monthlyPayment.toFixed(2))}`;
+
+            const dti = calculateDTI();
+            document.getElementById('dtiResult').textContent = `Your Current DTI: ${dti}%`;
+            document.getElementById('dtiResult').style.color = parseFloat(dti) > 50 ? 'red' : 'green';
+
+            renderDebts();
+        }
+
+        function addDebt() {
+            debts.push({ name: '', monthlyPayment: '', totalBalance: '', status: 'Keep' });
+            renderDebts();
+        }
+
+        function removeDebt(index) {
+            debts.splice(index, 1);
+            renderDebts();
+        }
+
+        function renderDebts() {
+            const debtsContainer = document.getElementById('debtsContainer');
+            debtsContainer.innerHTML = '';
+
+            debts.forEach((debt, index) => {
+                const debtElement = document.createElement('div');
+                debtElement.className = 'debt-item';
+                debtElement.innerHTML = `
+                    <input type="text" placeholder="Debt Name" value="${debt.name}" onchange="updateDebt(${index}, 'name', this.value)">
+                    <input type="text" placeholder="Monthly Payment" value="${debt.monthlyPayment}" onchange="updateDebt(${index}, 'monthlyPayment', this.value)">
+                    <input type="text" placeholder="Total Balance" value="${debt.totalBalance}" onchange="updateDebt(${index}, 'totalBalance', this.value)">
+                    <select onchange="updateDebt(${index}, 'status', this.value)">
+                        <option value="Keep" ${debt.status === 'Keep' ? 'selected' : ''}>Keep</option>
+                        <option value="Pay Off" ${debt.status === 'Pay Off' ? 'selected' : ''}>Pay Off</option>
+                    </select>
+                    <button class="btn btn-remove" onclick="removeDebt(${index})">Remove</button>
+                `;
+                debtsContainer.appendChild(debtElement);
+            });
+
+            updateCalculations();
+        }
+
+        function updateDebt(index, field, value) {
+            debts[index][field] = field === 'monthlyPayment' || field === 'totalBalance' ? formatNumber(value) : value;
+            updateCalculations();
+        }
+
+        async function fetchCalAvailability() {
+            try {
+                const response = await fetch('/api/cal-availability');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Cal.com availability data:', data);
+                if (Array.isArray(data) && data.length > 0) {
+                    displayCalAvailability(data);
+                } else {
+                    displayMessage('No available appointment times found. Please try again later.', 'ai-message');
+                }
+            } catch (error) {
+                console.error('Error fetching Cal.com availability:', error);
+                displayMessage('Sorry, I couldn\'t fetch available appointment times. Please try again later. Error: ' + error.message, 'ai-message');
+            }
+        }
+
+        function displayCalAvailability(availabilityData) {
+            const optionsContainer = document.createElement('div');
+            optionsContainer.classList.add('appointment-options');
+            optionsContainer.innerHTML = '<p>Available appointment times:</p>';
+
+            availabilityData.forEach(slot => {
+                const option = document.createElement('div');
+                option.classList.add('appointment-option');
+                option.textContent = new Date(slot.start).toLocaleString();
+                option.onclick = () => scheduleCalAppointment(slot);
+                optionsContainer.appendChild(option);
+            });
+
+            document.getElementById('chatbox').appendChild(optionsContainer);
+        }
+
+        async function scheduleCalAppointment(slot) {
+            const firstName = document.getElementById('firstName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+
+            try {
+                const response = await fetch('/api/cal-schedule', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        start: slot.start,
+                        end: slot.end,
+                        name: firstName,
+                        email: email,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+                displayMessage(`Great! Your appointment has been scheduled for ${new Date(data.start).toLocaleString()}.`, 'ai-message');
+            } catch (error) {
+                console.error('Error scheduling Cal.com appointment:', error);
+                displayMessage('Sorry, there was an error scheduling your appointment. Please try again later.', 'ai-message');
+            }
+        }
+
+        // Add event listeners to inputs
+        document.querySelectorAll('#dtiCalculator input:not([readonly])').forEach(input => {
+            input.addEventListener('input', updateCalculations);
+        });
+
+        // Initial render
+        renderDebts();
+        updateCalculations();
+    </script>
+</body>
+</html>
